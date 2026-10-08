@@ -48,8 +48,37 @@ function PoetryCard() {
   );
 }
 
-export default function Home() {
-  const { mood } = usePrefs();
+function ResetJourney() {
+  const [armed, setArmed] = useState(false);
+  useEffect(() => {
+    if (!armed) return;
+    const t = setTimeout(() => setArmed(false), 4000);
+    return () => clearTimeout(t);
+  }, [armed]);
+  const reset = () => {
+    if (!armed) {
+      setArmed(true);
+      return;
+    }
+    try {
+      Object.keys(localStorage)
+        .filter((k) => k.startsWith("ksw-") && k !== "ksw-mute")
+        .forEach((k) => localStorage.removeItem(k));
+    } catch {}
+    window.location.href = "/";
+  };
+  return (
+    <button
+      onClick={reset}
+      className="mt-4 font-body text-[11px] text-white/30 underline-offset-4 hover:text-white/50 active:scale-95"
+      aria-live="polite"
+    >
+      {armed ? "tap again to forget everything…" : "start over"}
+    </button>
+  );
+}
+
+export default function Home() {  const { mood } = usePrefs();
   const m = moodOrDefault(mood);
   const { availableCount, discoveredCount } = useStars();
 
@@ -150,6 +179,7 @@ export default function Home() {
             <p className="font-display text-[15px] italic text-white/40">✦ something else is still forming…</p>
             <p className="mt-0.5 font-body text-[11px] text-white/30">the shelf has room for more worlds</p>
           </div>
+          <ResetJourney />
         </motion.div>
       </div>
     </main>
