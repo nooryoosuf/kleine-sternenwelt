@@ -92,14 +92,14 @@ function PoetryView() {
     return () => io.disconnect();
   }, [phase, intro, poem]);
 
-  // the final star: pause after the last line, then it leaves
+  // the final star: a breath after the last line, then the ribbon lets it go
   useEffect(() => {
     if (!poem || phase !== "reading" || stage < 7) return;
-    later(motionOK ? 2600 : 600, () => {
+    later(motionOK ? 1400 : 400, () => {
       setPhase("star");
       setStarKey((k) => k + 1);
       sfx.discover();
-      later(motionOK ? 3400 : 800, () => setPhase("after"));
+      later(motionOK ? 2800 : 600, () => setPhase("after"));
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [phase, stage, poem]);
@@ -362,22 +362,22 @@ function PoetryView() {
         )}
       </motion.div>
 
-      {/* the final star detaching */}
+      {/* the final star — the ribbon lets it go */}
       <AnimatePresence>
         {phase === "star" && (
-          <motion.div key={`star-${starKey}`} className="pointer-events-none absolute inset-x-0 top-1/3 flex justify-center" aria-hidden>
+          <motion.div key={`star-${starKey}`} className="pointer-events-none absolute right-7 top-24 flex justify-center sm:right-9" aria-hidden>
             <motion.div className="relative flex flex-col items-center">
               <motion.span
-                initial={{ y: 40, opacity: 0 }}
-                animate={{ y: motionOK ? -190 : -60, opacity: [0, 1, 1, 0] }}
-                transition={{ duration: motionOK ? 3.2 : 0.8, ease: "easeOut" }}
-                className="block h-2.5 w-2.5 rounded-full"
-                style={{ background: "#ffe9d9", boxShadow: `0 0 14px 5px ${theme.accentSoft}, 0 0 34px 12px ${theme.accentSoft}` }}
+                initial={{ y: 30, opacity: 0, scale: 0.6 }}
+                animate={{ y: motionOK ? -160 : -50, opacity: [0, 1, 1, 0], scale: [0.6, 1.35, 1.1, 0.9] }}
+                transition={{ duration: motionOK ? 2.6 : 0.7, ease: "easeOut" }}
+                className="block h-3 w-3 rounded-full"
+                style={{ background: "#ffe9d9", boxShadow: `0 0 16px 6px ${theme.accentSoft}, 0 0 40px 14px ${theme.accentSoft}` }}
               />
               <motion.span
                 initial={{ height: 0, opacity: 0 }}
-                animate={{ height: motionOK ? 120 : 40, opacity: [0, 0.7, 0] }}
-                transition={{ duration: motionOK ? 3.2 : 0.8, ease: "easeOut" }}
+                animate={{ height: motionOK ? 100 : 36, opacity: [0, 0.8, 0] }}
+                transition={{ duration: motionOK ? 2.6 : 0.7, ease: "easeOut" }}
                 className="block w-px"
                 style={{ background: `linear-gradient(180deg, transparent, ${theme.accentSoft})` }}
               />
@@ -459,7 +459,7 @@ function PoetryView() {
           </motion.div>
         )}
 
-        {/* shelf of pages */}
+        {/* pinboard of pages — sticky notes, like before */}
         {intro === false && phase === "shelf" && (
           <div className="py-6">
             <p className="text-center font-body text-[11px] uppercase tracking-[0.35em] text-amber-100/60">things i left along the way</p>
@@ -467,43 +467,51 @@ function PoetryView() {
               {keptCount === POEMS.length ? "every page kept" : `${keptCount} of ${POEMS.length} pages kept`}
             </h1>
             {keptMsg && <p className="mt-2 text-center font-body text-sm text-white/60">A little piece of that page stayed behind.</p>}
-            <div className="mt-6 space-y-3">
+            <div className="mx-auto mt-8 grid max-w-sm grid-cols-3 items-start gap-2.5 px-1 sm:gap-3">
               {POEMS.map((p, i) => {
                 const pg = lib.pages[p.id];
                 const kept = !!pg?.keptAt;
+                const tilt = i === 0 ? "-3deg" : i === 1 ? "2deg" : "-2deg";
                 return (
                   <button
                     key={p.id}
                     onClick={() => selectPoem(p.id)}
-                    className="group flex w-full items-center gap-4 rounded-[24px] border border-white/12 bg-white/[0.04] px-5 py-4 text-left backdrop-blur-md transition active:scale-[0.99]"
+                    className="block w-full active:scale-95"
+                    style={{ transform: `rotate(${tilt})` }}
                     aria-label={`${p.title} — ${kept ? "kept, tap to reopen" : pg?.discoveredAt ? "half-read, tap to continue" : "waiting to be found"}`}
                   >
-                    {kept ? (
-                      <span className="relative block h-14 w-14 shrink-0 rounded-[3px] px-2 pb-1 pt-4 shadow" style={{ background: p.theme.paperWarm, transform: "rotate(-4deg)" }} aria-hidden>
-                        <span className="absolute -top-1.5 left-1/2 block h-3.5 w-3.5 -translate-x-1/2 rounded-full" style={{ background: p.theme.accent }} />
-                        <span className="block font-body text-[8px] uppercase tracking-[0.2em] text-stone-500">pg 0{i + 1}</span>
-                        <span className="mt-0.5 block truncate font-display text-[11px] italic leading-tight text-stone-800">{p.title}</span>
+                    <span
+                      className="relative block aspect-square w-full rounded-[4px] px-2 pb-2 pt-6 shadow-soft"
+                      style={{
+                        background: kept
+                          ? `${p.theme.paperWarm} repeating-linear-gradient(180deg, transparent 0 20px, rgba(41,37,36,0.08) 20px 21px)`
+                          : "rgba(255,255,255,0.05) repeating-linear-gradient(180deg, transparent 0 20px, rgba(255,255,255,0.05) 20px 21px)",
+                        opacity: kept || pg?.discoveredAt ? 1 : 0.75,
+                      }}
+                    >
+                      <span
+                        className="absolute -top-2 left-1/2 block h-4 w-4 -translate-x-1/2 rounded-full"
+                        style={{
+                          background: kept ? p.theme.accent : "rgba(255,255,255,0.25)",
+                          boxShadow: kept ? `0 2px 6px rgba(0,0,0,.4), 0 0 10px 2px ${p.theme.accentSoft}` : "0 2px 6px rgba(0,0,0,.4)",
+                        }}
+                        aria-hidden
+                      />
+                      <span className={`block font-body text-[8px] uppercase tracking-[0.25em] ${kept ? "text-stone-500" : "text-white/35"}`}>
+                        pg 0{i + 1}
                       </span>
-                    ) : (
-                      <span className="paper-texture relative block h-14 w-11 shrink-0 rounded-[3px] bg-[#f5ecdd] shadow" style={{ transform: "rotate(3deg)" }} aria-hidden>
-                        <span className="absolute inset-x-2 top-3 space-y-1" aria-hidden>
-                          <span className="block h-px bg-stone-800/25" />
-                          <span className="block h-px bg-stone-800/25" />
-                          <span className="block h-px bg-stone-800/25" />
-                        </span>
+                      <span className={`mt-1 block font-display text-[13px] italic leading-snug ${kept ? "text-stone-800" : "text-amber-50/90"}`}>
+                        {p.title}
                       </span>
-                    )}
-                    <span className="min-w-0 flex-1">
-                      <span className="block font-display text-xl italic text-amber-50">{p.title}</span>
-                      <span className="mt-0.5 block font-body text-xs text-white/55">
-                        {kept ? "kept · tap to reopen ✦" : pg?.discoveredAt ? "a page lies open, half-read" : "a page waiting to be found"}
+                      <span className={`absolute inset-x-2 bottom-2 block font-body text-[9px] ${kept ? "text-stone-500" : "text-white/35"}`}>
+                        {kept ? "kept ✦" : pg?.discoveredAt ? "half-read…" : "waiting…"}
                       </span>
                     </span>
-                    <span className="shrink-0 font-body text-lg text-amber-200 transition-transform group-hover:translate-x-0.5">→</span>
                   </button>
                 );
               })}
             </div>
+            <p className="mt-6 text-center font-body text-xs text-white/40">tap a note to open its page</p>
           </div>
         )}
 
