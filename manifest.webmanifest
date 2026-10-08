@@ -1,0 +1,15 @@
+{
+  "name": "Kleine Sternenwelt",
+  "short_name": "Sternenwelt",
+  "description": "Your little corner of the universe.",
+  "start_url": "/kleine-sternenwelt/",
+  "scope": "/kleine-sternenwelt/",
+  "display": "standalone",
+  "background_color": "#070b1a",
+  "theme_color": "#070b1a",
+  "orientation": "portrait",
+  "icons": [
+    { "src": "/kleine-sternenwelt/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" },
+    { "src": "/kleine-sternenwelt/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" }
+  ]
+}
