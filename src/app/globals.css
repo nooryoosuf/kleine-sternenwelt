@@ -1,0 +1,40 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --paper: #f6ecd9;
+  --wood: #7a5230;
+  color-scheme: dark;
+}
+
+html, body {
+  min-height: 100%;
+  overscroll-behavior-y: none;
+}
+
+body {
+  font-family: ui-rounded, system-ui, -apple-system, "Segoe UI", sans-serif;
+  background: #070b1a;
+  color: #f3ecd9;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.font-display { font-family: Georgia, "Times New Roman", serif; }
+.font-body { font-family: ui-rounded, system-ui, -apple-system, "Segoe UI", sans-serif; }
+
+.paper-texture {
+  background-image: radial-gradient(rgba(0,0,0,0.06) 1px, transparent 1px);
+  background-size: 8px 8px;
+}
+
+.wood-texture {
+  background-image: linear-gradient(180deg, rgba(255,255,255,0.08), rgba(0,0,0,0.22)), repeating-linear-gradient(93deg, rgba(0,0,0,0.08) 0 2px, transparent 2px 7px);
+}
+
+button, a { touch-action: manipulation; }
+:focus-visible { outline: 2px solid #ffe9a8; outline-offset: 3px; border-radius: 12px; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+}
