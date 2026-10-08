@@ -1,5 +1,6 @@
-const CACHE = "ksw-v4";
-const CORE = ["/", "/mood", "/world", "/badges", "/sky", "/poetry", "/manifest.webmanifest", "/icon.svg"];
+const CACHE = "ksw-v5";
+const BASE = "/kleine-sternenwelt";
+const CORE = [BASE + "/", BASE + "/mood/", BASE + "/world/", BASE + "/badges/", BASE + "/sky/", BASE + "/poetry/", BASE + "/manifest.webmanifest", BASE + "/icon.svg"];
 self.addEventListener("install", (e) => {
   e.waitUntil(caches.open(CACHE).then((c) => c.addAll(CORE).catch(() => {})).then(() => self.skipWaiting()));
 });
@@ -15,6 +16,6 @@ self.addEventListener("fetch", (e) => {
         caches.open(CACHE).then((c) => c.put(e.request, copy).catch(() => {}));
         return res;
       })
-      .catch(() => caches.match(e.request).then((m) => m || caches.match("/")))
+      .catch(() => caches.match(e.request).then((m) => m || caches.match(BASE + "/")))
   );
 });

@@ -73,7 +73,7 @@ function ResetJourney() {
         .filter((k) => k.startsWith("ksw-") && k !== "ksw-mute")
         .forEach((k) => localStorage.removeItem(k));
     } catch {}
-    window.location.href = "/";
+    window.location.assign(`${process.env.NEXT_PUBLIC_BASE_PATH ?? ""}/`);
   };
   return (
     <button
