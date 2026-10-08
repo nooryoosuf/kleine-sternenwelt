@@ -1,12 +1,52 @@
 "use client";
 import Link from "next/link";
+import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { Moon } from "lucide-react";
+import { getPoetryState } from "@/services/poetry-service";
 import { usePrefs } from "@/lib/prefs";
 import { moodOrDefault } from "@/lib/moods";
 import { useStars } from "@/lib/star-store";
 import { sfx } from "@/lib/audio";
 import { BackdropStars, Dust, Nebula } from "@/components/sky/decor";
+
+function PoetryCard() {
+  const [hint, setHint] = useState("three pages wait along the way");
+  useEffect(() => {
+    const s = getPoetryState();
+    const ids = ["the-shade-you-gave-me", "the-blue-hour", "small-suns"];
+    const kept = ids.filter((id) => s.pages[id]?.keptAt).length;
+    const opened = ids.filter((id) => s.pages[id]?.discoveredAt).length;
+    if (kept === ids.length) setHint("every page kept · the shelf glows softly");
+    else if (kept > 0) setHint(`${kept} of ${ids.length} pages kept`);
+    else if (opened > 0) setHint("a page lies open, half-read");
+  }, []);
+  return (
+    <Link
+      href="/poetry"
+      onClick={() => sfx.open()}
+      className="group block overflow-hidden rounded-[28px] border border-white/12 transition active:scale-[0.99]"
+      style={{ background: "linear-gradient(170deg, #1c1330 0%, #0b0918 78%)", boxShadow: "0 0 26px rgba(122,31,31,.22), 0 14px 40px rgba(0,0,0,.45)" }}
+      aria-label="Things I left along the way — open the poetry pages"
+    >
+      <div className="flex items-center gap-4 px-6 py-5 text-left">
+        <span className="paper-texture relative block h-16 w-12 shrink-0 rounded-[3px] bg-[#f5ecdd] shadow" style={{ transform: "rotate(-4deg)" }} aria-hidden>
+          <span className="absolute inset-x-2 top-3 space-y-1" aria-hidden>
+            <span className="block h-px bg-stone-800/30" />
+            <span className="block h-px bg-stone-800/30" />
+            <span className="block h-px bg-stone-800/30" />
+            <span className="mx-auto mt-1 block h-1.5 w-1.5 rounded-full" style={{ background: "#7a1f1f" }} />
+          </span>
+        </span>
+        <span className="min-w-0 flex-1">
+          <span className="block font-display text-xl italic text-amber-50">things i left along the way</span>
+          <span className="mt-0.5 block font-body text-[12px] text-white/55">{hint}</span>
+        </span>
+        <span className="shrink-0 font-body text-lg text-amber-200 transition-transform group-hover:translate-x-0.5">→</span>
+      </div>
+    </Link>
+  );
+}
 
 export default function Home() {
   const { mood } = usePrefs();
@@ -101,6 +141,9 @@ export default function Home() {
               </span>
             </div>
           </Link>
+
+          {/* things i left along the way — the poetry shelf */}
+          <PoetryCard />
 
           {/* room on the shelf for whatever comes next */}
           <div className="rounded-[28px] border border-dashed border-white/15 px-6 py-5 text-center" aria-label="More little worlds are still forming">

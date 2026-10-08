@@ -1,5 +1,5 @@
-const CACHE = "ksw-v3";
-const CORE = ["/", "/mood", "/world", "/badges", "/sky", "/manifest.webmanifest", "/icon.svg"];
+const CACHE = "ksw-v4";
+const CORE = ["/", "/mood", "/world", "/badges", "/sky", "/poetry", "/manifest.webmanifest", "/icon.svg"];
 self.addEventListener("install", (e) => {
   e.waitUntil(caches.open(CACHE).then((c) => c.addAll(CORE).catch(() => {})).then(() => self.skipWaiting()));
 });

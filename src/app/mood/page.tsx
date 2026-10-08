@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
 import { ArrowLeft, ArrowRight } from "lucide-react";
-import { MOOD_LIST, moodOrDefault } from "@/lib/moods";
+import { MOOD_LIST } from "@/lib/moods";
 import { usePrefs } from "@/lib/prefs";
 import { sfx } from "@/lib/audio";
 import { BackdropStars, Nebula } from "@/components/sky/decor";
@@ -15,7 +15,7 @@ export default function MoodPage() {
   const { mood: stored, setMood } = usePrefs();
   const [sel, setSel] = useState<(typeof MOOD_LIST)[number]["id"] | null>(stored);
   const router = useRouter();
-  const preview = sel ? moodOrDefault(sel) : null;
+  const picked = sel ? MOOD_LIST.find((m) => m.id === sel) : undefined;
 
   const choose = (id: (typeof MOOD_LIST)[number]["id"]) => {
     setSel(id);
@@ -31,8 +31,8 @@ export default function MoodPage() {
 
   return (
     <main
-      className="relative min-h-[100dvh] px-5 pb-32 pt-[max(1rem,env(safe-area-inset-top))]"
-      style={{ background: preview ? `linear-gradient(180deg, ${preview.sky[0]} 0%, ${preview.sky[1]} 55%, ${preview.sky[2]} 100%)` : DEFAULT_BG, transition: "background 1s ease" }}
+      className="relative min-h-[100dvh] px-5 pb-[max(2rem,env(safe-area-inset-bottom))] pt-[max(1rem,env(safe-area-inset-top))]"
+      style={{ background: picked ? `linear-gradient(180deg, ${picked.sky[0]} 0%, ${picked.sky[1]} 55%, ${picked.sky[2]} 100%)` : DEFAULT_BG, transition: "background 1s ease" }}
     >
       <div className="absolute inset-0" aria-hidden>
         <Nebula />
@@ -77,55 +77,28 @@ export default function MoodPage() {
           })}
         </div>
 
-        {/* live preview of the picked sky */}
+        {/* progress button — in-flow and sticky, so it never covers content or the home bar */}
         <AnimatePresence>
-          {preview && (
+          {picked && (
             <motion.div
-              key={preview.id}
-              initial={{ opacity: 0, y: 18 }}
+              initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0 }}
-              className="mt-4 overflow-hidden rounded-3xl border border-white/15 shadow-soft"
-              aria-live="polite"
+              className="sticky bottom-[max(1rem,env(safe-area-inset-bottom))] z-10 mt-6"
             >
-              <div className="relative h-28" style={{ background: `linear-gradient(180deg, ${preview.sky[0]}, ${preview.sky[2]})` }} aria-hidden>
-                <span className="absolute rounded-full bg-[#fdf3d0]" style={{ right: "14%", top: "18%", width: 26, height: 26, boxShadow: `0 0 20px 6px ${preview.palette.glow}` }} />
-                {[12, 30, 52, 68, 84].map((l, i) => (
-                  <span key={i} className="absolute rounded-full bg-white" style={{ left: `${l}%`, top: `${22 + ((i * 23) % 55)}%`, width: 2 + (i % 2), height: 2 + (i % 2), opacity: 0.8 }} />
-                ))}
-              </div>
-              <div className="bg-black/45 px-5 py-4 backdrop-blur-md">
-                <p className="font-body text-[11px] uppercase tracking-[0.3em] text-amber-100/60">your sky will feel like this</p>
-                <p className="mt-1 font-display text-xl italic text-amber-50">{preview.emoji} {preview.name} <span className="text-white/50">· {preview.tagline}</span></p>
-              </div>
+              <p className="mb-2 text-center font-body text-[11px] text-white/60">
+                ① {picked.emoji} {picked.name} picked · ② step inside
+              </p>
+              <button
+                onClick={go}
+                className="flex w-full items-center justify-center gap-2 rounded-full bg-amber-100 px-5 py-4 font-body text-[15px] font-semibold text-stone-900 shadow-glow transition active:scale-95"
+              >
+                Step inside <ArrowRight size={17} />
+              </button>
             </motion.div>
           )}
         </AnimatePresence>
       </div>
-
-      {/* progress button */}
-      <AnimatePresence>
-        {sel && preview && (
-          <motion.div
-            initial={{ y: 90, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            exit={{ y: 90, opacity: 0 }}
-            transition={{ type: "spring", damping: 24, stiffness: 260 }}
-            className="fixed inset-x-0 bottom-0 z-20 px-5 pb-[max(1.25rem,env(safe-area-inset-bottom))] pt-6"
-            style={{ background: "linear-gradient(180deg, transparent, rgba(0,0,0,.55))" }}
-          >
-            <div className="mx-auto max-w-md">
-              <p className="mb-2 text-center font-body text-[11px] text-white/50">① mood picked · ② step inside</p>
-              <button
-                onClick={go}
-                className="flex w-full items-center justify-center gap-2 rounded-full bg-amber-100 px-7 py-4 font-body text-[15px] font-semibold text-stone-900 shadow-glow transition active:scale-95"
-              >
-                Step inside as {preview.name} <ArrowRight size={17} />
-              </button>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
     </main>
   );
 }
