@@ -12,11 +12,13 @@ import { BackdropStars, Dust, Nebula } from "@/components/sky/decor";
 
 function PoetryCard() {
   const [hint, setHint] = useState("three pages wait along the way");
+  const [hasNew, setHasNew] = useState(false);
   useEffect(() => {
     const s = getPoetryState();
     const ids = ["the-shade-you-gave-me", "the-blue-hour", "small-suns"];
     const kept = ids.filter((id) => s.pages[id]?.keptAt).length;
     const opened = ids.filter((id) => s.pages[id]?.discoveredAt).length;
+    setHasNew(ids.some((id) => !s.pages[id]?.discoveredAt));
     if (kept === ids.length) setHint("every page kept · the shelf glows softly");
     else if (kept > 0) setHint(`${kept} of ${ids.length} pages kept`);
     else if (opened > 0) setHint("a page lies open, half-read");
@@ -25,10 +27,16 @@ function PoetryCard() {
     <Link
       href="/poetry"
       onClick={() => sfx.open()}
-      className="group block overflow-hidden rounded-[28px] border border-white/12 transition active:scale-[0.99]"
+      className="group relative block overflow-hidden rounded-[28px] border border-white/12 transition active:scale-[0.99]"
       style={{ background: "linear-gradient(170deg, #1c1330 0%, #0b0918 78%)", boxShadow: "0 0 26px rgba(122,31,31,.22), 0 14px 40px rgba(0,0,0,.45)" }}
       aria-label="Things I left along the way — open the poetry pages"
     >
+      {hasNew && (
+        <span className="absolute right-4 top-4 flex h-3 w-3" aria-hidden>
+          <span className="absolute inline-flex h-full w-full animate-ping rounded-full opacity-70" style={{ background: "#ff7a6b", animationDuration: "2s" }} />
+          <span className="relative inline-flex h-3 w-3 rounded-full" style={{ background: "#ff6b5e", boxShadow: "0 0 8px 2px rgba(255,107,94,.6)" }} />
+        </span>
+      )}
       <div className="flex items-center gap-4 px-6 py-5 text-left">
         <span className="paper-texture relative block h-16 w-12 shrink-0 rounded-[3px] bg-[#f5ecdd] shadow" style={{ transform: "rotate(-4deg)" }} aria-hidden>
           <span className="absolute inset-x-2 top-3 space-y-1" aria-hidden>
@@ -131,10 +139,16 @@ export default function Home() {  const { mood } = usePrefs();
           <Link
             href="/sky"
             onClick={() => sfx.open()}
-            className="group block overflow-hidden rounded-[28px] border shadow-soft transition active:scale-[0.99]"
+            className="group relative block overflow-hidden rounded-[28px] border shadow-soft transition active:scale-[0.99]"
             style={{ borderColor: m.palette.glass, background: `linear-gradient(170deg, ${m.sky[1]} 0%, ${m.sky[0]} 78%)`, boxShadow: `0 0 34px ${m.palette.glow}, 0 14px 40px rgba(0,0,0,.45)` }}
             aria-label={`Night of stars — ${availableCount > 0 ? `${availableCount} stars waiting` : "look up"}`}
           >
+            {availableCount > 0 && (
+              <span className="absolute right-4 top-4 z-10 flex h-3 w-3" aria-hidden>
+                <span className="absolute inline-flex h-full w-full animate-ping rounded-full opacity-70" style={{ background: "#ff7a6b", animationDuration: "2s" }} />
+                <span className="relative inline-flex h-3 w-3 rounded-full" style={{ background: "#ff6b5e", boxShadow: "0 0 8px 2px rgba(255,107,94,.6)" }} />
+              </span>
+            )}
             <div className="relative px-6 pb-6 pt-7 text-center">
               {/* living preview of the actual sky */}
               <div className="relative mx-auto h-28 w-full max-w-[260px] overflow-hidden rounded-2xl border border-white/10" style={{ background: `linear-gradient(180deg, ${m.sky[0]}, ${m.sky[2]})` }} aria-hidden>

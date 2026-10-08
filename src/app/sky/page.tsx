@@ -427,7 +427,7 @@ function SkyView() {
           <span className="text-sm leading-none">{mm.emoji}</span>
           <span className="font-body text-xs text-amber-50">home</span>
         </Link>
-        <div className="rounded-full bg-black/35 px-4 py-2.5 font-body text-xs text-amber-100 backdrop-blur-md" aria-live="polite">
+        <div className={`rounded-full bg-black/35 px-4 py-2.5 font-body text-xs text-amber-100 backdrop-blur-md${availableCount > 0 ? " animate-pulse" : ""}`} aria-live="polite">
           ✦ {discoveredCount} kept{availableCount > 0 ? ` · ${availableCount} waiting` : ""}
         </div>
         <div className="flex items-center gap-2">

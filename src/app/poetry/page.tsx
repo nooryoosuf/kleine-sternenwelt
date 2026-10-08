@@ -497,6 +497,12 @@ function PoetryView() {
                         }}
                         aria-hidden
                       />
+                      {!pg?.discoveredAt && (
+                        <span className="absolute -right-1.5 -top-1.5 flex h-3 w-3" aria-hidden>
+                          <span className="absolute inline-flex h-full w-full animate-ping rounded-full opacity-70" style={{ background: "#ff7a6b", animationDuration: "2s" }} />
+                          <span className="relative inline-flex h-3 w-3 rounded-full" style={{ background: "#ff6b5e", boxShadow: "0 0 8px 2px rgba(255,107,94,.6)" }} />
+                        </span>
+                      )}
                       <span className={`block font-body text-[8px] uppercase tracking-[0.25em] ${kept ? "text-stone-500" : "text-white/35"}`}>
                         pg 0{i + 1}
                       </span>
